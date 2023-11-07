@@ -2,8 +2,9 @@
 #define UTILITIES_H
 
 #include <stdio.h>
-#include <opencv/cv.h>
-#include <opencv/cxcore.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/core/types_c.h>
 #include "EdgeMap.h"
 
 void RGB2LabDeneme(unsigned char *redImg, unsigned char *greenImg, unsigned char *blueImg, 

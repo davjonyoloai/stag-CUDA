@@ -1,12 +1,13 @@
 #include "Stag.h"
 #include "opencv2/opencv.hpp"
+#include <opencv2/imgcodecs.hpp>
 
 int main() {
-  cv::Mat image = cv::imread("1.png", CV_LOAD_IMAGE_GRAYSCALE);
+    cv::Mat image = cv::imread("1.png", cv::ImreadModes::IMREAD_GRAYSCALE);
 
-  Stag stag(15, 7, true);
+    Stag stag(15, 7, true);
 
-  stag.detectMarkers(image);
-  stag.logResults("");
-  return 0;
+    stag.detectMarkers(image);
+    stag.logResults("");
+    return 0;
 }
