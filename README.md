@@ -1,20 +1,45 @@
-# STag: A Stable Fiducial Marker System
+# STag - A Stable, Occlusion-Resistant Fiducial Marker System
 
-Code used in the following paper:
+This repository is an updated fork of the [stable fiducial marker system](https://github.com/bbenligiray/stag), modified to use OpenCV 4.
+
+Corresponding python package: https://github.com/ManfredStoiber/stag-python
+
+## 📊 Comparison Between Different Marker Systems:
+[<img src="https://github.com/ManfredStoiber/stag/assets/47210077/668ca457-33dd-4ce7-8b94-662c7a5bb4d9" width="400" height="200" />](https://www.youtube.com/watch?v=vnHI3GzLVrY)
+
+## 📋 Getting Started
+0. Install Prerequisites
+    - [CMake >= 3.16](https://cmake.org/getting-started/)
+        - On Linux: `apt install cmake`
+    - [OpenCV 4](https://opencv.org/get-started/) for C++
+        - On Linux: `apt install libopencv-dev`
+1. Clone this repository: `git clone https://github.com/ManfredStoiber/stag`
+2. Build
+    1. cd into project: `cd stag`
+    2. `mkdir build`
+    3. `cd build`
+    4. `cmake ..`
+    5. `make`
+3. Run test app
+    1. `cd ../app`
+    2. Run `./stagtest`. This creates several images in the current directory, one for each detection step
+
+## 📖 Usage
+
+For an example how to use this library, refer to [main.cpp](https://github.com/ManfredStoiber/stag/blob/master/main.cpp) and [src/Stag.h](https://github.com/ManfredStoiber/stag/blob/master/src/Stag.h)
+
+## 🏷 Markers
+
+- Collection of markers: [Drive](https://drive.google.com/drive/folders/0ByNTNYCAhWbIV1RqdU9vRnd2Vnc?resourcekey=0-9ipvecbezW8EWUva5GBQTQ&usp=sharing)
+- Marker Generator: see [ref/marker generator](https://github.com/ManfredStoiber/stag/tree/master/ref/marker%20generator) for reference code for marker generation
+
+## 📔 Known Issues
+- Sometimes markers are detected multiple times
+    - Workaround: only use one of the detections
+
+## 📰 Originally Published in the Following Paper:
 
 [B. Benligiray; C. Topal; C. Akinlar, "STag: A Stable Fiducial Marker System," Image and Vision Computing, 2019.](https://arxiv.org/abs/1707.06292)
-
-Markers (see `ref/marker generator` for reference code for marker generation):
-
-https://drive.google.com/drive/folders/0ByNTNYCAhWbIV1RqdU9vRnd2Vnc?resourcekey=0-9ipvecbezW8EWUva5GBQTQ&usp=sharing
-
-### ROS Package
-
-- [STag ROS: A ROS package for the Stable Fiducial Marker System](https://github.com/usrl-uofsc/stag_ros/) by Unmanned Systems & Robotics Lab - UofSC
-
-- [ROS wrapper for STag](https://github.com/dartmouthrobotics/stag_ros) by Dartmouth Reality and Robotics Lab
-
-[![Supplementary Video](https://user-images.githubusercontent.com/19530665/57184379-6a250580-6ec3-11e9-8ab3-7e139966f13b.png)](https://www.youtube.com/watch?v=vnHI3GzLVrY) 
 
 Some figures from the paper:
 

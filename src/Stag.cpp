@@ -47,16 +47,16 @@ void Stag::detectMarkers(Mat inImage)
 
 void Stag::logResults(string path)
 {
-	drawer.drawEdgeMap(path + "1 edges.png", image, edInterface.getEdgeMap());
-	drawer.drawLines(path + "2 lines.png", image, edInterface.getEDLines());
-	drawer.drawCorners(path + "3 corners.png", image, quadDetector.getCornerGroups());
-	drawer.drawQuads(path + "4 quads.png", image, quadDetector.getQuads());
+	drawer.drawEdgeMap(path + "1_edges.png", image, edInterface.getEdgeMap());
+	drawer.drawLines(path + "2_lines.png", image, edInterface.getEDLines());
+	drawer.drawCorners(path + "3_corners.png", image, quadDetector.getCornerGroups());
+	drawer.drawQuads(path + "4_quads.png", image, quadDetector.getQuads());
 	if (keepLogs)
-		drawer.drawQuads(path + "5 distorted quads.png", image, quadDetector.getDistortedQuads());
-	drawer.drawMarkers(path + "6 markers.png", image, markers);
+		drawer.drawQuads(path + "5_distorted_quads.png", image, quadDetector.getDistortedQuads());
+	drawer.drawMarkers(path + "6_markers.png", image, markers);
 	if (keepLogs)
-		drawer.drawQuads(path + "7 false quads.png", image, falseCandidates);
-	drawer.drawEllipses(path + "8 ellipses.png", image, markers);
+		drawer.drawQuads(path + "7_false_quads.png", image, falseCandidates);
+	drawer.drawEllipses(path + "8_ellipses.png", image, markers);
 }
 
 

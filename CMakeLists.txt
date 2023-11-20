@@ -1,4 +1,4 @@
-
+cmake_minimum_required(VERSION 3.16)
 project(Stag)
 
 IF(NOT CMAKE_BUILD_TYPE)
@@ -40,11 +40,11 @@ target_link_libraries(
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/app)
 
 add_executable(
-    testrun
+    stag_example
     main.cpp
 )
 
 target_link_libraries(
-    testrun
+    stag_example
     LibStag
 )
