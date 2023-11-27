@@ -8,10 +8,7 @@
 using cv::Point2d;
 
 
-QuadDetector::QuadDetector(bool inKeepLogs)
-{
-	keepLogs = inKeepLogs;
-}
+QuadDetector::QuadDetector() = default;
 
 
 void QuadDetector::detectQuads(const cv::Mat &image, EDInterface* edInterface)
@@ -60,8 +57,7 @@ void QuadDetector::detectQuads(const cv::Mat &image, EDInterface* edInterface)
 			// eliminate if projective distortion is larger than the threshold
 			if (quad.projectiveDistortion > thresProjectiveDistortion)
 			{
-				if (keepLogs)
-					distortedQuads.push_back(quad);
+                distortedQuads.push_back(quad);
 			}
 			else {
                 quads.push_back(quad);

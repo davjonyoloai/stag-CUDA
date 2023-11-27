@@ -25,9 +25,6 @@ public:
 
 class QuadDetector
 {
-	// if keepLogs is true, keep the intermediate results of the detection algorithm in the memory, to be dumped when asked (default: false)
-	bool keepLogs = false;
-
 	// thresDist is used to check the following: (default: 7, may need to increase it for larger images)
 	// if detected corners are the same with estimated corners
 	// if detected corners are on edge segments
@@ -60,7 +57,7 @@ class QuadDetector
 	bool checkIfTwoCornersFaceEachother(const Corner& c1, const Corner& c2);
 
 public:
-	QuadDetector(bool inKeepLogs = false);
+	QuadDetector();
 
 	void detectQuads(const cv::Mat &image, EDInterface* edInterface);
 

@@ -11,8 +11,6 @@
 class Stag
 {
 
-	// if keepLogs is true, keep the intermediate results of the detection algorithm in the memory, to be dumped when asked (default: false)
-	bool keepLogs = false;
 	int errorCorrection;
 	EDInterface edInterface;
 	QuadDetector quadDetector;
@@ -36,7 +34,7 @@ public:
     vector<Marker> markers;
     vector<Quad> falseCandidates;
 
-	Stag(int libraryHD = 15, int errorCorrection = 7, bool inKeepLogs = false);
+    Stag(int libraryHD = 15, int errorCorrection = 7);
 	void detectMarkers(cv::Mat inImage);
 	void logResults(string path = "");
 };

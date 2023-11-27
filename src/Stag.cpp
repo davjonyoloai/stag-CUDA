@@ -7,11 +7,10 @@
 using cv::Mat;
 using cv::Point2d;
 
-Stag::Stag(int libraryHD, int inErrorCorrection, bool inKeepLogs)
+Stag::Stag(int libraryHD, int inErrorCorrection)
 {
-	keepLogs = inKeepLogs;
 	errorCorrection = inErrorCorrection;
-	quadDetector = QuadDetector(keepLogs);
+	quadDetector = QuadDetector();
 	fillCodeLocations();
 	decoder = Decoder(libraryHD);
 }
@@ -36,7 +35,7 @@ void Stag::detectMarkers(Mat inImage)
 			marker.shiftCorners2(shift);
 			markers.push_back(marker);
 		}
-		else if (keepLogs)
+		else
 			falseCandidates.push_back(quads[indQuad]);
 	}
 
@@ -51,11 +50,9 @@ void Stag::logResults(string path)
 	drawer.drawLines(path + "2_lines.png", image, edInterface.getEDLines());
 	drawer.drawCorners(path + "3_corners.png", image, quadDetector.getCornerGroups());
 	drawer.drawQuads(path + "4_quads.png", image, quadDetector.getQuads());
-	if (keepLogs)
-		drawer.drawQuads(path + "5_distorted_quads.png", image, quadDetector.getDistortedQuads());
+    drawer.drawQuads(path + "5_distorted_quads.png", image, quadDetector.getDistortedQuads());
 	drawer.drawMarkers(path + "6_markers.png", image, markers);
-	if (keepLogs)
-		drawer.drawQuads(path + "7_false_quads.png", image, falseCandidates);
+    drawer.drawQuads(path + "7_false_quads.png", image, falseCandidates);
 	drawer.drawEllipses(path + "8_ellipses.png", image, markers);
 }
 

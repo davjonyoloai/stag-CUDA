@@ -43,7 +43,7 @@ std::vector<int> getIds(Stag *stag) {
 // detect markers in image and return corners and ids
 std::tuple<std::vector<std::vector<std::vector<double>>>, std::vector<int>> detectMarkers(Mat inImage, int libraryHD, int errorCorrection) {
     // initialize STag detector
-    Stag stag(libraryHD, errorCorrection, true);
+    Stag stag(libraryHD, errorCorrection);
 
     // detect markers
     stag.detectMarkers(inImage);
