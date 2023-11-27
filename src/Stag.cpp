@@ -10,6 +10,23 @@ using cv::Point2d;
 Stag::Stag(int libraryHD, int inErrorCorrection)
 {
 	errorCorrection = inErrorCorrection;
+
+	// check libraryHD
+	std::set<int> possibleHDs = {11, 13, 15, 17, 19, 21, 23};
+	if (possibleHDs.count(libraryHD) == 0) {
+		throw std::invalid_argument("Invalid library HD " + std::to_string(libraryHD) + ". Possible values are: [11, 13, 15, 17, 19, 21, 23]");
+	}
+
+	// if errorCorrection set to -1, take max possible value for libraryHD
+	if (errorCorrection == -1) {
+		errorCorrection = (libraryHD-1)/2;
+	}
+
+	// check errorCorrection
+	if (inErrorCorrection > (libraryHD -1) / 2 || errorCorrection < 0) {
+		throw std::invalid_argument("Invalid error correction value " + std::to_string(errorCorrection) + " for library HD " + std::to_string(libraryHD) + ". Error correction needs to be in range 0 <= HD <= (HD-1)/2.");
+	}
+
 	quadDetector = QuadDetector();
 	fillCodeLocations();
 	decoder = Decoder(libraryHD);
