@@ -1,17 +1,17 @@
 #include "src/Stag.h"
 #include <opencv2/imgcodecs.hpp>
-#include<vector>
+#include <vector>
 using cv::Mat;
 
-std::tuple<std::vector<std::vector<std::vector<double>>>, std::vector<int>> detectMarkers(Mat inImage, int libraryHD, int errorCorrection);
+std::tuple<std::vector<std::vector<std::vector<double>>>, std::vector<int>> detectMarkers(Mat inImage, int libraryHD);
 std::vector<int> getIds(Stag *stag);
 
 int main() {
     // load image
-    cv::Mat image = cv::imread("../testimage.jpg", cv::ImreadModes::IMREAD_GRAYSCALE);
+    cv::Mat image = cv::imread("../example.jpg", cv::ImreadModes::IMREAD_GRAYSCALE);
 
     // detect markers
-    auto results = detectMarkers(image, 21, 7);
+    auto results = detectMarkers(image, 21);
 
     return 0;
 }
@@ -41,9 +41,9 @@ std::vector<int> getIds(Stag *stag) {
 }
 
 // detect markers in image and return corners and ids
-std::tuple<std::vector<std::vector<std::vector<double>>>, std::vector<int>> detectMarkers(Mat inImage, int libraryHD, int errorCorrection) {
+std::tuple<std::vector<std::vector<std::vector<double>>>, std::vector<int>> detectMarkers(Mat inImage, int libraryHD) {
     // initialize STag detector
-    Stag stag(libraryHD, errorCorrection);
+    Stag stag(libraryHD);
 
     // detect markers
     stag.detectMarkers(inImage);
