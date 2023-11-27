@@ -33,10 +33,6 @@ For an example how to use this library, refer to [main.cpp](https://github.com/M
 - Collection of markers: [Drive](https://drive.google.com/drive/folders/0ByNTNYCAhWbIV1RqdU9vRnd2Vnc?resourcekey=0-9ipvecbezW8EWUva5GBQTQ&usp=sharing)
 - Marker Generator: see [ref/marker generator](https://github.com/ManfredStoiber/stag/tree/master/ref/marker%20generator) for reference code for marker generation
 
-## 📔 Known Issues
-- Sometimes markers are detected multiple times
-    - Workaround: only use one of the detections
-
 ## 📰 Originally Published in the Following Paper:
 
 [B. Benligiray; C. Topal; C. Akinlar, "STag: A Stable Fiducial Marker System," Image and Vision Computing, 2019.](https://arxiv.org/abs/1707.06292)

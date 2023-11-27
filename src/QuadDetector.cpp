@@ -63,8 +63,10 @@ void QuadDetector::detectQuads(const cv::Mat &image, EDInterface* edInterface)
 				if (keepLogs)
 					distortedQuads.push_back(quad);
 			}
-			else
-				quads.push_back(quad);
+			else {
+                quads.push_back(quad);
+                break;
+            }
 		}
 	}
 }
