@@ -42,17 +42,17 @@ public:
 	 *  If set to -1, the max possible value for the given library HD
 	 *  is used.
 	 */
-	Stag(int libraryHD, int errorCorrection = -1);
+	explicit Stag(int libraryHD, int errorCorrection = -1);
 	/**
 	 * Detects markers in given image.
 	 * @param inImage OpenCV Matrix of input image.
 	 */
-	void detectMarkers(cv::Mat inImage);
+	void detectMarkers(const cv::Mat& inImage);
 	/**
 	 * Logs results to path (creates images for every detection step).
 	 * @param path Path where the images are going to be created. Directory must exist, otherwise images cannot be saved.
 	 */
-	void logResults(string path = "");
+	void logResults(const string& path = "");
 };
 
 

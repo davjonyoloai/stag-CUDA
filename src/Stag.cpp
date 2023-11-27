@@ -33,35 +33,45 @@ Stag::Stag(int libraryHD, int inErrorCorrection)
 }
 
 
-void Stag::detectMarkers(Mat inImage)
+void Stag::detectMarkers(const Mat& inImage)
 {
-	image = inImage;
+	// convert image to grayscale
+	if (inImage.channels() == 1) {
+		image = inImage;
+	} else if (inImage.channels() == 3) {
+		cv::cvtColor(inImage, image, cv::COLOR_BGR2GRAY);
+	} else if (inImage.channels() == 4) {
+		cv::cvtColor(inImage, image, cv::COLOR_BGRA2GRAY);
+	} else {
+		throw std::invalid_argument("Invalid image color space. Supported color spaces are: [GRAYSCALE, BGR, BGRA].");
+	}
+
 	quadDetector.detectQuads(image, &edInterface);
 
 	vector<Quad> quads = quadDetector.getQuads();
 
-	for (int indQuad = 0; indQuad < quads.size(); indQuad++)
+	for (auto & quad : quads)
 	{
-		quads[indQuad].estimateHomography();
-		Codeword c = readCode(quads[indQuad]);
+		quad.estimateHomography();
+		Codeword c = readCode(quad);
 		int shift;
 		int id;
 		if (decoder.decode(c, errorCorrection, id, shift))
 		{
-			Marker marker(quads[indQuad], id);
+			Marker marker(quad, id);
 			marker.shiftCorners2(shift);
 			markers.push_back(marker);
 		}
 		else
-			falseCandidates.push_back(quads[indQuad]);
+			falseCandidates.push_back(quad);
 	}
 
-	for (int indMarker = 0; indMarker < markers.size(); indMarker++)
-		poseRefiner.refineMarkerPose(&edInterface, markers[indMarker]);
+	for (auto & marker : markers)
+		poseRefiner.refineMarkerPose(&edInterface, marker);
 }
 
 
-void Stag::logResults(string path)
+void Stag::logResults(const string& path)
 {
 	drawer.drawEdgeMap(path + "1_edges.png", image, edInterface.getEdgeMap());
 	drawer.drawLines(path + "2_lines.png", image, edInterface.getEDLines());
