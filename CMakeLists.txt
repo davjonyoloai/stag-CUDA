@@ -32,6 +32,8 @@ add_library(
     LibStag SHARED
     ${SRC_FILE1}
     ${SRC_FILE2}
+        src/Stag.cpp
+        src/Stag.h
 )
 target_link_libraries(
     LibStag

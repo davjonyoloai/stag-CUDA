@@ -9,22 +9,25 @@ For the corresponding __Python__ package, refer to: https://github.com/ManfredSt
 
 ## 📖 Usage
 ```c++
-// initialize STag detector
+// load image
+cv::Mat image = cv::imread("example.jpg");
+
+// set HD library
 int libraryHD = 21;
-Stag stag(libraryHD);
+
+auto corners = std::vector<std::vector<cv::Point2f>>();
+auto ids = std::vector<int>();
+auto rejectedImgPoints = std::vector<std::vector<cv::Point2f>>(); // optional, helpful for debugging
 
 // detect markers
-stag.detectMarkers(inImage);
+stag::detectMarkers(image, libraryHD, corners, ids, rejectedImgPoints);
 
-// access markers
-auto firstMarker = stag->markers[0];                    // get first marker
-int id = firstMarker.id;                                // id of first detected marker
-vector<cv::Point2d> corners = stag->markers[0].corners; // coordinates of corners of marker
-cv::Point2d center = stag->markers[0].center;           // coordinates of center point
+// draw and save results
+stag::drawDetectedMarkers(image, corners, ids);
+cv::imwrite("example_result.jpg", image);
 ```
 
-- For an explanation of `libraryHD = 21` refer to [Configuration](#-configuration)
-- For a more comprehensive example refer to [main.cpp](https://github.com/ManfredStoiber/stag/blob/master/main.cpp) and [src/Stag.h](https://github.com/ManfredStoiber/stag/blob/master/src/Stag.h)
+For an explanation of `libraryHD = 21` refer to [Configuration](#-configuration)
 
 ## 🏷 Markers
 
