@@ -1,4 +1,5 @@
 #include "Stag.h"
+#include "StagDetector.h"
 
 namespace {
 	void detectMarkers( const cv::Mat& image,

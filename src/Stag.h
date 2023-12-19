@@ -1,7 +1,7 @@
 #ifndef STAG_STAG_H
 #define STAG_STAG_H
 
-#include "StagDetector.h"
+#include "opencv2/opencv.hpp"
 
 namespace stag {
 

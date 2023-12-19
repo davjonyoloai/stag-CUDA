@@ -7,6 +7,11 @@ ENDIF()
 
 MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 
+IF (WIN32)
+  set(CMAKE_DEBUG_POSTFIX "d")
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+ENDIF (WIN32)
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall -w  ")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -w ")
 
@@ -19,7 +24,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 find_package(OpenCV 4 REQUIRED)
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 file(GLOB SRC_FILE1 "src/*.c*")
 file(GLOB SRC_FILE2 "src/ED/*.c*")
 
@@ -29,17 +33,16 @@ include_directories(
     src/ED/
 )
 add_library(
-    LibStag SHARED
+    staglib
     ${SRC_FILE1}
     ${SRC_FILE2}
         src/Stag.cpp
         src/Stag.h
 )
 target_link_libraries(
-    LibStag
+    staglib
     ${OpenCV_LIBS}
 )
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/app)
 
 add_executable(
     stag_example
@@ -48,5 +51,11 @@ add_executable(
 
 target_link_libraries(
     stag_example
-    LibStag
+    staglib
 )
+
+IF (MSVC)
+  set_target_properties(stag_example PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+  set_target_properties(stag_example PROPERTIES RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_BINARY_DIR})
+  set_target_properties(stag_example PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_BINARY_DIR})
+ENDIF (MSVC)

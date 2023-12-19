@@ -2,7 +2,8 @@
 
 This repository is an updated fork of the [stable fiducial marker system](https://github.com/bbenligiray/stag), modified to use __OpenCV 4__.
 
-For the corresponding __Python__ package, refer to: https://github.com/ManfredStoiber/stag-python
+> [!NOTE]
+> For the corresponding __Python__ package, refer to: https://github.com/ManfredStoiber/stag-python.
 
 ## 📊 Comparison Between Different Marker Systems:
 [<img src="https://github.com/ManfredStoiber/stag/assets/47210077/668ca457-33dd-4ce7-8b94-662c7a5bb4d9" width="400" height="200" />](https://www.youtube.com/watch?v=vnHI3GzLVrY)
@@ -38,13 +39,13 @@ For an explanation of `libraryHD = 21` refer to [Configuration](#-configuration)
 0. __Install__ Prerequisites
 
     [__CMake__ >= 3.16](https://cmake.org/getting-started/)
-     - On Linux: `apt install cmake`
+    - On Linux: `apt install cmake`
 
     [__OpenCV__ 4](https://opencv.org/get-started/) for C++
-     - On Linux: `apt install libopencv-dev`
+    - On Linux: `apt install libopencv-dev`
 1. __Clone__ this repository
    
-   - `git clone https://github.com/ManfredStoiber/stag`
+    - `git clone https://github.com/ManfredStoiber/stag`
 2. __Build__ the project.
 
    In the project directory, run the following commands:
@@ -53,10 +54,13 @@ For an explanation of `libraryHD = 21` refer to [Configuration](#-configuration)
     3. `cmake ..`
     4. `cmake --build .`
 3. __Run__ the example
-    1. `cd ../app`
-    2. Run `./stag_example`
-   
-         This example application creates several images in the current directory, one for each detection step
+    - On Linux: Run `./stag_example`
+    - On Windows: Run `stag_example.exe`
+
+   This example application detects the markers in `../example.jpg` and saves the visualized results to `example_result.jpg`
+
+> [!NOTE]
+> The library is created as static by default. If you want to create a shared library instead, use the cmake option `BUILD_SHARED_LIBS=ON`.
 
 ## 🛠 Configuration
 When initializing the library, following parameters can be specified:
