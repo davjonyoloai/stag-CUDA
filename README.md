@@ -1,6 +1,6 @@
 # STag - A Stable, Occlusion-Resistant Fiducial Marker System
 
-This repository is an updated fork of the [stable fiducial marker system](https://github.com/bbenligiray/stag), modified to use __OpenCV 4__.
+This repository is an improved and updated fork of the [stable fiducial marker system](https://github.com/bbenligiray/stag), using __OpenCV 4__.
 
 > [!NOTE]
 > For the corresponding __Python__ package, refer to: https://github.com/ManfredStoiber/stag-python.
