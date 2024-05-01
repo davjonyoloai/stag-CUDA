@@ -61,3 +61,33 @@ void Marker::shiftCorners2(int shift)
 	// have to recalculate homography after shift
 	estimateHomography();
 }
+
+bool Marker::isSimilarIn(vector<Marker> collection) {
+	for (auto& marker : collection)
+	{
+		// calculate distance between centers
+		double dist = norm(center - marker.center);
+
+		// convert corners from double to float
+		vector<cv::Point2f> fcorners1(corners.size());
+		vector<cv::Point2f> fcorners2(marker.corners.size());
+		cv::Mat(corners).copyTo(fcorners1);
+		cv::Mat(marker.corners).copyTo(fcorners2);
+
+		// calculate difference between areas
+		double area1 = contourArea(fcorners1);
+		double area2 = contourArea(fcorners2);
+		double areaMean = (area1 + area2) / 2;
+		double distArea = fabs(area1 - area2);
+
+		// markers are similar if
+		// - ids are identical
+		// - distance between centers is less than 0.2% of mean area
+		// - difference of areas is less than 25% of mean area
+		if (id == marker.id && dist < areaMean * 0.002 && distArea < areaMean * 0.25)
+		{
+			return true;
+		}
+	}
+	return false;
+}

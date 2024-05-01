@@ -29,27 +29,27 @@ void StagDetector::detectMarkers(const Mat& inImage)
 	image = inImage;
 	quadDetector.detectQuads(image, &edInterface);
 
-	vector<vector<Quad>> quads = quadDetector.getQuads();
+	vector<Quad> quads = quadDetector.getQuads();
 
-	for (auto & cornerGroupQuads : quads)
+	for (auto & quad : quads)
 	{
-		for (auto & quad : cornerGroupQuads)
+		quad.estimateHomography();
+		Codeword c = readCode(quad);
+		int shift;
+		int id;
+		if (decoder.decode(c, errorCorrection, id, shift))
 		{
-			quad.estimateHomography();
-			Codeword c = readCode(quad);
-			int shift;
-			int id;
-			if (decoder.decode(c, errorCorrection, id, shift))
+			Marker marker(quad, id);
+			marker.shiftCorners2(shift);
+
+			// only add marker if similar not already found
+			if (!marker.isSimilarIn(markers))
 			{
-				Marker marker(quad, id);
-				marker.shiftCorners2(shift);
 				markers.push_back(marker);
-				goto markerDetected; // continue with next cornerGroup if marker found for current cornerGroup
 			}
-			else
-				falseCandidates.push_back(quad);
 		}
-		markerDetected:;
+		else
+			falseCandidates.push_back(quad);
 	}
 
 	for (auto & marker : markers)
@@ -62,25 +62,8 @@ void StagDetector::logResults(const string& path)
 	drawer.drawEdgeMap(path + "1_edges.png", image, edInterface.getEdgeMap());
 	drawer.drawLines(path + "2_lines.png", image, edInterface.getEDLines());
 	drawer.drawCorners(path + "3_corners.png", image, quadDetector.getCornerGroups());
-
-	vector<vector<Quad>> quads = quadDetector.getQuads();
-	vector<Quad> quadsFlat;
-	// flatten vector
-	for (auto& cornerGroupQuads : quads)
-	{
-		quadsFlat.insert(end(quadsFlat), begin(cornerGroupQuads), end(cornerGroupQuads));
-	}
-	drawer.drawQuads(path + "4_quads.png", image, quadsFlat);
-
-	vector<vector<Quad>> distortedQuads = quadDetector.getDistortedQuads();
-	vector<Quad> distortedQuadsFlat;
-	// flatten vector
-	for (auto& cornerGroupDistortedQuads : distortedQuads)
-	{
-		distortedQuadsFlat.insert(end(distortedQuadsFlat), begin(cornerGroupDistortedQuads), end(cornerGroupDistortedQuads));
-	}
-    drawer.drawQuads(path + "5_distorted_quads.png", image, distortedQuadsFlat);
-
+	drawer.drawQuads(path + "4_quads.png", image, quadDetector.getQuads());
+    drawer.drawQuads(path + "5_distorted_quads.png", image, quadDetector.getDistortedQuads());
 	drawer.drawMarkers(path + "6_markers.png", image, markers);
     drawer.drawQuads(path + "7_false_quads.png", image, falseCandidates);
 	drawer.drawEllipses(path + "8_ellipses.png", image, markers);
