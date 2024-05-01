@@ -34,8 +34,8 @@ class QuadDetector
 	double thresProjectiveDistortion = 1.5;
 
 	vector<vector<Corner>> cornerGroups;
-	vector<Quad> distortedQuads;
-	vector<Quad> quads;
+	vector<vector<Quad>> distortedQuads;
+	vector<vector<Quad>> quads;
 
 	// forms groups of line segments that may form a quad (line segments must be >=4 and from the same edge segment)
 	// each line group is represented by a vector<int>, and each line segment is represented by an int (its index)
@@ -61,11 +61,20 @@ public:
 
 	void detectQuads(const cv::Mat &image, EDInterface* edInterface);
 
+	/**
+	 * @returns Detected Corner groups
+	 */
 	const vector<vector<Corner>>& getCornerGroups();
 
-	const vector<Quad>& getQuads() const;
+	/**
+	 * @returns Detected Quads for each Corner group
+	 */
+	const vector<vector<Quad>>& getQuads() const;
 
-	const vector<Quad>& getDistortedQuads() const;
+	/**
+	 * @returns Detected distorted Quads for each Corner group
+	 */
+	const vector<vector<Quad>>& getDistortedQuads() const;
 };
 
 #endif

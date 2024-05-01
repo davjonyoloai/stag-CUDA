@@ -28,6 +28,9 @@ void QuadDetector::detectQuads(const cv::Mat &image, EDInterface* edInterface)
 	// create quads using corner groups
 	for (int indCornerGroup = 0; indCornerGroup < cornerGroups.size(); indCornerGroup++)
 	{
+		std::vector<Quad> cornerGroupQuads; // quads of current corner group
+		std::vector<Quad> cornerGroupDistortedQuads; // distorted quads of current corner group
+
 		// assumed that at least 3 corners are needed. actually, we need at least two opposite corners.
 		// however, it is assumed that there is an additional corner between opposite corners, hence the need for 3 corners
 		if (cornerGroups[indCornerGroup].size() < 3)
@@ -57,13 +60,16 @@ void QuadDetector::detectQuads(const cv::Mat &image, EDInterface* edInterface)
 			// eliminate if projective distortion is larger than the threshold
 			if (quad.projectiveDistortion > thresProjectiveDistortion)
 			{
-                distortedQuads.push_back(quad);
+				cornerGroupDistortedQuads.push_back(quad);
 			}
 			else {
-                quads.push_back(quad);
-                break;
+				cornerGroupQuads.push_back(quad);
             }
 		}
+
+		// append detected quads of current corner group to all detected quads
+		quads.push_back(cornerGroupQuads);
+		distortedQuads.push_back(cornerGroupDistortedQuads);
 	}
 }
 
@@ -73,14 +79,12 @@ const vector<vector<Corner>>& QuadDetector::getCornerGroups()
 	return cornerGroups;
 }
 
-
-const vector<Quad>& QuadDetector::getQuads() const
+const vector<vector<Quad>>& QuadDetector::getQuads() const
 {
 	return quads;
 }
 
-
-const vector<Quad>& QuadDetector::getDistortedQuads() const
+const vector<vector<Quad>>& QuadDetector::getDistortedQuads() const
 {
 	return distortedQuads;
 }
