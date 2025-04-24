@@ -5,6 +5,7 @@ using cv::Mat;
 
 int main() {
     // load image
+    // this is the first change for test github
     cv::Mat image = cv::imread("../example.jpg");
 
 	// set HD library
