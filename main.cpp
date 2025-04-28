@@ -3,12 +3,11 @@
 #include <chrono>
 #include "src/Stag.h"
 #include <vector>
-// #include "running_avg.h"
+
 using namespace std;
 
 int main()
 {
-    // RunningAverage timeRunAvg;
 
     // Create a video capture object
     //    cv::VideoCapture cap(0); // Change to your camera index if necessary
@@ -46,9 +45,8 @@ int main()
         now = std::chrono::system_clock::now();
         double endTime = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
         float timeDiff = endTime - startTime;
-        // timeRunAvg.addValue(timeDiff);
 
-        std::cout << "\ncurTime: " << timeDiff << "(ms), Max Detection time: " << maxDetTime << " (ms), running avg time: " <<endl;
+        std::cout << "\ncurTime: " << timeDiff << "(ms), Max Detection time: " << maxDetTime <<endl;
         if (timeDiff > maxDetTime)
             maxDetTime = timeDiff;
 
