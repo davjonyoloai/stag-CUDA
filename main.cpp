@@ -1,26 +1,66 @@
+#include <opencv2/opencv.hpp>
+#include <iostream>
+#include <chrono>
 #include "src/Stag.h"
-#include <opencv2/imgcodecs.hpp>
 #include <vector>
-using cv::Mat;
+// #include "running_avg.h"
+using namespace std;
 
-int main() {
-    // load image
-    // this is the first change for test github
-    cv::Mat image = cv::imread("../example.jpg");
+int main()
+{
+    // RunningAverage timeRunAvg;
 
-	// set HD library
-	int libraryHD = 21;
+    // Create a video capture object
+    //    cv::VideoCapture cap(0); // Change to your camera index if necessary
+    //    if (!cap.isOpened())
+    //    {
+    //        std::cerr << "Error: Could not open camera." << std::endl;
+    //        return -1;
+    //    }
+    //    cap.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
+    //    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 720);
 
-    auto corners = std::vector<std::vector<cv::Point2f>>();
-    auto ids = std::vector<int>();
-	auto rejectedImgPoints = std::vector<std::vector<cv::Point2f>>(); // optional, helpful for debugging
+    //    double width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+    //    double height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+    //    cout << "\nImage resolution: " << width << " x " << height;
 
-    // detect markers
-    stag::detectMarkers(image, libraryHD, corners, ids, rejectedImgPoints);
+    // set HD library {11, 13, 15, 17, 19, 21, 23}
+    int libraryHD = 11;
 
-	// draw and save results
-	stag::drawDetectedMarkers(image, corners, ids);
-	cv::imwrite("example_result.jpg", image);
+    float maxDetTime = 0.;
+    cv::Mat frame;
+    while (true)
+    {
+        //        cap >> frame; // Capture a new frame
+        frame=cv::imread("/home/zero/projects/stag-CUDA/300dpi.png");
+        auto now = std::chrono::system_clock::now();
+        double startTime = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+        
+        auto corners = std::vector<std::vector<cv::Point2f>>();
+        auto ids = std::vector<int>();
+        auto rejectedImgPoints = std::vector<std::vector<cv::Point2f>>(); // optional, helpful for debugging
 
+        // detect markers
+        stag::detectMarkers(frame, libraryHD, corners, ids, rejectedImgPoints);
+        
+        now = std::chrono::system_clock::now();
+        double endTime = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+        float timeDiff = endTime - startTime;
+        // timeRunAvg.addValue(timeDiff);
+
+        std::cout << "\ncurTime: " << timeDiff << "(ms), Max Detection time: " << maxDetTime << " (ms), running avg time: " <<endl;
+        if (timeDiff > maxDetTime)
+            maxDetTime = timeDiff;
+
+        // display detected markers
+        stag::drawDetectedMarkers(frame, corners, ids);
+        cv::imshow("Stag Marker Detection", frame);
+
+        // Exit on 'q' key press
+        if (cv::waitKey(10) == 'q')
+        {
+            break;
+        }
+    }
     return 0;
 }

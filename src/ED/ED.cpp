@@ -21,12 +21,44 @@
 
 #include "Utilities.h"
 #include "Timer.h"
+#include <iostream>
+#include <chrono>
 
 //Burak - won't be needing this
 //#include "ImageVideoLib.h"
 
 ///----------------------------------------------------------------------------------------------
 /// Detect edges by the Edge Drawing method (ED)
+void mySmoothImage(unsigned char *srcImg, unsigned char *smoothImg, int width, int height, double sigma){
+  // smooth image by 5x5 gaussian filter and replicate padded input image
+  unsigned int gaussian5x5kernel[25] =  {1, 4, 7, 4, 1, 
+                                          4, 16, 26, 16, 4,
+                                          7, 26, 41, 26, 7,
+                                          4, 16, 26, 16, 4,
+                                          1, 4, 7, 4, 1};
+  // float gaussian5x5kernel[25] =  {0.0029, 0.0131, 0.0215, 0.0131, 0.0029, 
+  //                                 0.0131, 0.0585, 0.0956, 0.0585, 0.0131,
+  //                                 0.0215, 0.0956, 0.1592, 0.0956, 0.0215,
+  //                                 0.0131, 0.0585, 0.0956, 0.0585, 0.0131,
+  //                                 0.0029, 0.0131, 0.0215, 0.0131, 0.0029};
+
+  for (int i = 0; i < width; i++){
+    for (int j = 0; j < height; j++){
+      unsigned int my_sum = 0.0;
+      for (int r = 0; r < 5; r++){
+        for (int c = 0; c < 5; c++){
+          my_sum += srcImg[std::min(std::max((j + r - 2), 0), height - 1)*width + std::min(std::max((i + c - 2), 0), width - 1)]*gaussian5x5kernel[r*5 + c];
+          
+        }
+
+      }
+      // std::cout << "in func: " << my_sum << std::endl;
+      smoothImg[j*width + i] = (unsigned char)(my_sum / 273);
+      // smoothImg[j*width + i] = (unsigned char)(my_sum / 0.987);
+    }
+  }
+}
+
 /// 
 EdgeMap *DetectEdgesByED(unsigned char *srcImg, int width, int height, GradientOperator op, int GRADIENT_THRESH, int ANCHOR_THRESH, double smoothingSigma){
   // Check parameters for sanity
@@ -127,11 +159,40 @@ EdgeMap *DetectEdgesByEDPF(unsigned char *srcImg, int width, int height, double 
 
   // Allocate space for temporary storage
   unsigned char *smoothImg = new unsigned char[width*height];
+  unsigned char *par_smoothImg = new unsigned char[width*height];
   unsigned char *dirImg = new unsigned char[width*height];
   short *gradImg = new short[width*height];
 
   /*------------ SMOOTH THE IMAGE BY A GAUSSIAN KERNEL -------------------*/
+  auto now = std::chrono::system_clock::now();
+  double startTime = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
   SmoothImage(srcImg, smoothImg, width, height, smoothingSigma);
+  now = std::chrono::system_clock::now();
+  double endTime = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+  float cv_timeDiff = endTime - startTime;
+
+  now = std::chrono::system_clock::now();
+  startTime = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+  mySmoothImage(srcImg, par_smoothImg, width, height, smoothingSigma);
+  now = std::chrono::system_clock::now();
+  endTime = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+  float my_timeDiff = endTime - startTime;
+  std::cout << "opencv SmoothImage takes: " << cv_timeDiff << "\t mySmoothImage takes: " << my_timeDiff << std::endl;
+
+
+  // int err_val = 0;
+  // int diff = 0;
+  // for (int i = 0; i < height; i++){
+  //   for (int j = 0; j < width; j++){
+  //     diff = std::abs((int)smoothImg[i*width + j] - (int)par_smoothImg[i*width + j]);
+  //     if (diff > 3) {
+  //       std::cout << "(" << i << ", " << j << ") \t diff: " << diff << std::endl;
+  //     }
+  //   }
+  //   // err_val += std::abs((int)smoothImg[i*width + j] - (int)par_smoothImg[i*width + j]);
+  //   // std::cout << i << std::endl << "cv2: " << (int)smoothImg[i] << std::endl << "my func: " << (unsigned int)par_smoothImg[i] << std::endl;
+  // }
+  // // std::cout << 'smooth error: ' << err_val << std::endl;
 
   /*------------ COMPUTE GRADIENT & EDGE DIRECTION MAPS -------------------*/
   int GRADIENT_THRESH = 16;
