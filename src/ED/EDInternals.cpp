@@ -44,40 +44,7 @@ struct Chain {
   Pixel *pixels;               // Pointer to the beginning of the pixels array
 };
 
-static bool IsAnchor(short *gradImg, unsigned char *dirImg, EdgeMap *map, int ANCHOR_THRESH){ // ComputeAnchorPoints
-  int width = map->width;
-  int height = map->height;
-
-  // unsigned char *edgeImg = map->edgeImg;
-  // memset(edgeImg, 0, width*height);
-
-  for (int i=1; i<height-1; i++){
-    // int start = 2;
-    // int inc = 1;
-    // if (i%SCAN_INTERVAL != 0){start=SCAN_INTERVAL; inc=SCAN_INTERVAL;}
-
-   for (int j=1; j<width-1; j++){
-      // if (gradImg[i*width+j] < GRADIENT_THRESH) continue;
-
-      if (dirImg[i*width+j] == EDGE_VERTICAL){
-        // vertical edge
-        int diff1 = gradImg[i*width+j] - gradImg[i*width+j-1];
-        int diff2 = gradImg[i*width+j] - gradImg[i*width+j+1];
-        if (diff1 >= ANCHOR_THRESH && diff2 >= ANCHOR_THRESH) return true;//edgeImg[i*width+j] = ANCHOR_PIXEL;
-        
-      } else {
-        // horizontal edge
-        int diff1 = gradImg[i*width+j] - gradImg[(i-1)*width+j];
-        int diff2 = gradImg[i*width+j] - gradImg[(i+1)*width+j];
-        if (diff1 >= ANCHOR_THRESH && diff2 >= ANCHOR_THRESH) return true;//edgeImg[i*width+j] = ANCHOR_PIXEL;
-      } // end-else
-    } //end-for-inner
-  } //end-for-outer
-  return false;
-}
-
-
-static void my_JoinAnchorPoints(short *gradImg, unsigned char *dirImg, EdgeMap *map, int GRADIENT_THRESH, int ANCHOR_THRESH){
+static bool my_ComputeAndJoinAnchorPoints(short *gradImg, unsigned char *dirImg, EdgeMap *map, int GRADIENT_THRESH, int ANCHOR_THRESH){ // ComputeAnchorPoints
   int width = map->width;
   int height = map->height;
 
@@ -85,30 +52,60 @@ static void my_JoinAnchorPoints(short *gradImg, unsigned char *dirImg, EdgeMap *
   memset(edgeImg, 0, width*height);
 
   for (int i=1; i<height-1; i++){
-    for (int j=1; j<width-1; j++){
-    int row = i;
-    int col = j;
-    if (IsAnchor(gradImg, dirImg, map, ANCHOR_THRESH)) {
-      while (gradImg[row*width+col] > 0 && dirImg[row*width+col] == EDGE_HORIZONTAL && edgeImg[row*width+col] != EDGE_PIXEL){
-        edgeImg[row*width+col] = EDGE_PIXEL;
+   for (int j=1; j<width-1; j++){
+      // if (gradImg[i*width+j] < GRADIENT_THRESH) continue;
+      int row = i;
+      int col = j;
+      if (dirImg[i*width+j] == EDGE_VERTICAL){
+        // vertical edge
+        int diff1 = gradImg[i*width+j] - gradImg[i*width+j-1];
+        int diff2 = gradImg[i*width+j] - gradImg[i*width+j+1];
+        if (diff1 >= ANCHOR_THRESH && diff2 >= ANCHOR_THRESH) {
+          while (gradImg[row*width+col] > 0 && dirImg[row*width+col] == EDGE_VERTICAL && edgeImg[row*width+col] != EDGE_PIXEL){
+            edgeImg[row*width+col] = EDGE_PIXEL;
 
-        if(gradImg[(row-1)*width+col-1] > gradImg[row*width+col-1] && gradImg[(row-1)*width+col-1] > gradImg[(row+1)*width+col-1]){
-          row--;
-          col--;
-        } else if (gradImg[(row+1)*width+col-1] > gradImg[row*width+col-1] && gradImg[(row+1)*width+col-1] > gradImg[(row-1)*width+col-1]) {
-          row++;
-          col--;
-        } else {
-          col--;
+            if(gradImg[(row-1)*width+col-1] > gradImg[(row - 1)*width+col] && gradImg[(row-1)*width+col-1] > gradImg[(row-1)*width+col+1]){
+              row--;
+              col--;
+            } else if (gradImg[(row-1)*width+col+1] > gradImg[(row - 1)*width+col] && gradImg[(row-1)*width+col+1] > gradImg[(row-1)*width+col-1]) {
+              row--;
+              col++;
+            } else {
+              row--;
+            }
+            if (row < 1 || row > (height - 2) || col < 1 || col > (width - 2)){
+              break;
+            }
+          }
         }
-        if (row < 1 || row > (height - 2) || col < 1 || col > (width - 2)){
-          break;
+      } else {
+        // horizontal edge
+        int diff1 = gradImg[i*width+j] - gradImg[(i-1)*width+j];
+        int diff2 = gradImg[i*width+j] - gradImg[(i+1)*width+j];
+        if (diff1 >= ANCHOR_THRESH && diff2 >= ANCHOR_THRESH) {
+          while (gradImg[row*width+col] > 0 && dirImg[row*width+col] == EDGE_HORIZONTAL && edgeImg[row*width+col] != EDGE_PIXEL){
+            edgeImg[row*width+col] = EDGE_PIXEL;
+
+            if(gradImg[(row-1)*width+col-1] > gradImg[row*width+col-1] && gradImg[(row-1)*width+col-1] > gradImg[(row+1)*width+col-1]){
+              row--;
+              col--;
+            } else if (gradImg[(row+1)*width+col-1] > gradImg[row*width+col-1] && gradImg[(row+1)*width+col-1] > gradImg[(row-1)*width+col-1]) {
+              row++;
+              col--;
+            } else {
+              col--;
+            }
+            if (row < 1 || row > (height - 2) || col < 1 || col > (width - 2)){
+              break;
+            }
+          }
         }
-      }
-    }
-    }
-  }
+      } // end-else
+    } //end-for-inner
+  } //end-for-outer
+  return false;
 }
+
 ///-----------------------------------------------------------------------------------
 /// Compute anchor points
 ///
@@ -2390,7 +2387,7 @@ EdgeMap *DoDetectEdgesByED(short *gradImg, unsigned char *dirImg, int width, int
   /*------------ JOIN ANCHORS -------------------*/
   JoinAnchorPointsUsingSortedAnchors(gradImg, dirImg, map, GRADIENT_THRESH, MIN_PATH_LEN);
 //  JoinAnchorPoints(gradImg, dirImg, map, GRADIENT_THRESH, MIN_PATH_LEN);
-  my_JoinAnchorPoints(gradImg, dirImg, my_map, GRADIENT_THRESH, ANCHOR_THRESH);
+  my_ComputeAndJoinAnchorPoints(gradImg, dirImg, my_map, GRADIENT_THRESH, ANCHOR_THRESH);
 
   
   unsigned char *edgeImg = map->edgeImg;
@@ -2402,12 +2399,12 @@ EdgeMap *DoDetectEdgesByED(short *gradImg, unsigned char *dirImg, int width, int
   fclose(image);
 
   unsigned char *my_edgeImg = my_map->edgeImg;
-  FILE *image = fopen("my_edgeImg.pgm","wb");
-  fprintf(image,"P5\n");               // P5 filetype
-  fprintf(image,"%d %d\n",my_map->width,my_map->height);   // dimensions
-  fprintf(image,"255\n");              // Max pixel
-  fwrite(my_edgeImg,1,my_map->width*my_map->height,image);
-  fclose(image);
+  FILE *my_image = fopen("my_edgeImg.pgm","wb");
+  fprintf(my_image,"P5\n");               // P5 filetype
+  fprintf(my_image,"%d %d\n",my_map->width,my_map->height);   // dimensions
+  fprintf(my_image,"255\n");              // Max pixel
+  fwrite(my_edgeImg,1,my_map->width*my_map->height,my_image);
+  fclose(my_image);
 
   return map;
 } //DoDetectEdgesByED
